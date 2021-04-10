@@ -134,6 +134,19 @@ def create_random_permutation(values: [int]) -> [int]:
 
     return permutation
 
+def get_color_counts(graph: nx.Graph):
+    color_count = {}
+
+    for v in graph:
+        c = graph.nodes[v][color]
+
+        if c in color_count:
+            color_count[c] += 1
+        else:
+            color_count[c] = 1
+
+    return color_count
+
 def print_graph(graph: nx.Graph):
     for v in graph.nodes:
         w = graph.nodes[v][weight]
