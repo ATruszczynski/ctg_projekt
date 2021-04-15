@@ -30,16 +30,7 @@ def weight_graph(graph: nx.Graph, weights: [int]) -> nx.Graph:
 
     return graph
 
-def weight_graph_randomly(graph: nx.Graph, minWeight: int, maxWeight: int) -> nx.Graph: # uzupełnia brakujące(!) wagi
-    graph = graph.copy()
-    weights = []
-    for v in graph.nodes:
-        if weight not in graph.nodes[v]:
-            weights.append(random.randrange(minWeight, maxWeight))
-        else:
-            weights.append(graph.nodes[v][weight])
 
-    return weight_graph(graph, weights)
 
 
 def coloring_cost(graph: nx.Graph) -> int:
@@ -169,28 +160,9 @@ def lowest_unused_color(colors: [int]):
 
     return chosen_color
 
-def read_graph_file(path: string) -> nx.Graph:
-    graph_file = open(path, 'r')
-    lines = graph_file.readlines()
 
-    graph = nx.Graph()
 
-    for line in lines:
-        elements = line.split()
 
-        if len(elements) < 2:
-            continue
-
-        type = elements[0]
-
-        if type == 'p':
-            graph.add_nodes_from(range(int(elements[2])))
-        elif type == 'e':
-            graph.add_edge(int(elements[1]) - 1, int(elements[2]) - 1)
-        elif type == 'w':
-            graph.nodes[int(elements[1]) - 1][weight] = int(elements[2])
-
-    return graph
 
 
 

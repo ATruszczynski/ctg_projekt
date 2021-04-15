@@ -8,6 +8,8 @@ import os
 random.seed(1001)
 
 score = 's'
+mut_id = 'M'
+cross_id = 'C'
 
 def fitness_func(graph: nx.Graph) -> int:
     cost = coloring_cost(graph)
@@ -21,11 +23,17 @@ def fitness_func(graph: nx.Graph) -> int:
 
     return graph_score
 
-def mutation(graph: nx.Graph) -> nx.Graph:
+def mutation(graph: nx.Graph, ver_mut_prob: float) -> nx.Graph:
     # print('Mutation')
     # print(os.getpid())
-    index = random.randrange(len(graph.nodes))
-    return local_reduction(graph, index)
+
+    count = max(int(len(graph.nodes) * ver_mut_prob), 1)
+
+    for i in range(count):
+        index = random.randrange(len(graph.nodes))
+        graph = local_reduction(graph, index)
+
+    return graph
 
 def local_reduction(graph: nx.Graph, index: int, allow_increase: bool = True):
     graph = graph.copy()
@@ -87,27 +95,36 @@ def tournament_selection(colorings: [nx.Graph], participant_count: int) -> nx.Gr
 
     return chosen[0].copy()
 
-def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: float, cprob: float, selected: int, verbal: bool = False, pool: int = 12, patience: int = 5, fix_prob: float = 0.1) -> nx.Graph:
+def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: float, cprob: float, selected: int, verbal: int = 0, pool_count: int = 12, patience: int = 5, fix_prob: float = 0.1, mutate_ver_prob: float=0.01, random_init: bool = False) -> nx.Graph:
     population = []
-
-    print("Prep start")
+    if verbal >= 1:
+        print("Prep start")
     for i in range(pop_count):
         graph_g = graph.copy()
-        graph_g = greedy_coloring(graph_g, create_random_permutation(range(len(graph_g.nodes))))
-        # graph_g = random_correct_coloring(graph_g)
+        if random_init:
+            graph_g = random_correct_coloring(graph_g)
+        else:
+            graph_g = greedy_coloring(graph_g, create_random_permutation(range(len(graph_g.nodes))))
         population.append(graph_g)
 
-    print("Prep end")
+    if verbal >= 1:
+        print("Prep end")
 
-    if verbal:
+    if verbal >= 2:
         print_many_graphs(population)
 
     curr_best = -math.inf
     curr_patience = 0
     # pool = mp.Pool(mp.cpu_count())
-    pool = mp.Pool(pool)
+    pool = mp.Pool(pool_count)
+    if verbal >= 1:
+        print(f'Iteration')
     for it in range(iterations):
-        print(f'Iteration {it}')
+        if verbal >= 1:
+            if it == 0:
+                print(f'{it}', end="")
+            else:
+                print(f',{it}', end="")
         child_population = []
 
         # # Step 1: Init multiprocessing.Pool()
@@ -124,91 +141,78 @@ def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: fl
         for ind in range(len(population)):
             fitness_func(population[ind]) # ustawia score grafu
 
-        to_mutate = []
-        to_cross = []
-        to_pass = []
-
-        tasks = []
-
-        while len(to_mutate) + len(to_cross) + len(to_pass) < pop_count:
-            mt = random.uniform(0, 1)
-            cr = random.uniform(0, 1)
-
-            mutant = tournament_selection(population, selected)
-            if mt < mprob:
-                to_mutate.append(mutant)
-            else:
-                to_pass.append(mutant)
-
-            if len(to_mutate) + len(to_cross) + len(to_pass) >= pop_count:
-                break
-
-            if len(to_mutate) + len(to_cross) + len(to_pass) < pop_count - 2:
-                cross1 = tournament_selection(population, 3)
-                cross2 = tournament_selection(population, 3)
-
-                if cr < cprob:
-                    to_cross.append([cross1, cross2])
-                else:
-                    to_pass.append(cross1)
-                    to_pass.append(cross2)
-
-        for m in to_mutate:
-            tasks.append([m])
-        for c in to_cross:
-            tasks.append(c)
-
-        number_of_buckets = 10
-        task_buckets = []
-        for b in range(number_of_buckets):
-            task_buckets.append([])
-
-        for t_ind in range(len(tasks)):
-            task_buckets[t_ind % number_of_buckets].append(tasks[t_ind])
-
-
-        # processed = [pool.apply(genetic_task, args=(t,)) for t in tasks]
-        processed = [pool.apply_async(genetic_tasks, args=(t,)) for t in task_buckets]
-        [bucket.wait() for bucket in processed]
-
-        processed = [result for bucket in processed for task in bucket.get(timeout=1) for result in task]
-
-        child_population = []
-        # child_population.extend(mutants)
-        # child_population.extend(crossovers_t)
-        child_population.extend(processed)
-        child_population.extend(to_pass)
-
-        ori = 1
-
-
-
-        # while len(child_population) < pop_count:
+        # to_mutate = []
+        # to_cross = []
+        # to_pass = []
+        #
+        # tasks = []
+        #
+        # while len(to_mutate) + len(to_cross) + len(to_pass) < pop_count:
         #     mt = random.uniform(0, 1)
         #     cr = random.uniform(0, 1)
         #
         #     mutant = tournament_selection(population, selected)
-        #
         #     if mt < mprob:
-        #         mutant = mutation(mutant)
+        #         to_mutate.append(mutant)
+        #     else:
+        #         to_pass.append(mutant)
         #
-        #     child_population.append(mutant)
-        #
-        #     if len(child_population) >= pop_count:
+        #     if len(to_mutate) + len(to_cross) + len(to_pass) >= pop_count:
         #         break
         #
-        #     cross1 = tournament_selection(population, 3)
-        #     cross2 = tournament_selection(population, 3)
+        #     if len(to_mutate) + len(to_cross) + len(to_pass) < pop_count - 2:
+        #         cross1 = tournament_selection(population, selected)
+        #         cross2 = tournament_selection(population, selected)
         #
-        #     if cr < cprob:
-        #         cross1, cross2 = crossover(cross1, cross2)
+        #         if cr < cprob:
+        #             to_cross.append(['C', cross1, cross2])
+        #         else:
+        #             to_pass.append(cross1)
+        #             to_pass.append(cross2)
         #
-        #     child_population.append(cross1)
-        #
-        #     if len(child_population) >= pop_count:
-        #         break
-        #
-        #     child_population.append(cross2)
+        # for m in to_mutate:
+        #     tasks.append(['M', m, mutate_ver_prob])
+        # for c in to_cross:
+        #     tasks.append(c)
+
+        next_pop_count = 0
+        crossover_tasks = []
+        to_pass = []
+
+        while next_pop_count < pop_count:
+            cr = random.uniform(0, 1)
+            cross1 = tournament_selection(population, selected)
+            if cr < cprob and next_pop_count <= pop_count - 2:
+                cross2 = tournament_selection(population, selected)
+                crossover_tasks.append([cross_id, cross1, cross2])
+                next_pop_count += 2
+            else:
+                to_pass.append(cross1)
+                next_pop_count += 1
+
+        processed = async_process_genetic_tasks(pool, pool_count, crossover_tasks)
+        processed.extend(to_pass)
+
+        assert len(processed) == pop_count
+
+        mutate_tasks = []
+        to_pass = []
+
+        for p in processed:
+            mt = random.uniform(0, 1)
+            if mt < mprob:
+                mutate_tasks.append([mut_id, p, mutate_ver_prob])
+            else:
+                to_pass.append(p)
+
+        print(f"<<{len(mutate_tasks)}>>", end="")
+
+        processed = async_process_genetic_tasks(pool, pool_count, mutate_tasks)
+
+        child_population = []
+        child_population.extend(processed)
+        child_population.extend(to_pass)
+        assert len(child_population) == pop_count
 
         population = child_population
 
@@ -223,16 +227,23 @@ def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: fl
         else:
             curr_patience += 1
 
+
+
         if curr_patience == patience:
-            print("Patience run out!")
+            if verbal >= 1:
+                print("\nPatience run out!")
             break
 
-        print(coloring_cost(min(population, key=lambda x: coloring_cost(x))))
+        if verbal >= 1:
+            print(f"({coloring_cost(min(population, key=lambda x: coloring_cost(x)))})", end="")
+            if it > 0 and it % 10 == 0:
+                print()
 
-        if verbal:
+        if verbal >= 2:
             print_many_graphs(population)
             print()
-
+    if verbal >= 1:
+        print()
 
     pool.close()
     for ind in range(len(population)):
@@ -268,13 +279,28 @@ def attempt_to_eliminate_small_colors(graph: nx.Graph, prob: float=0.1):
 #     if len(graphs) == 2:
 #         return [item for item in crossover(graphs[0], graphs[1])]
 
+def async_process_genetic_tasks(pool, pool_count, tasks):
+    number_of_buckets = pool_count
+    task_buckets = []
+    for b in range(number_of_buckets):
+        task_buckets.append([])
+
+    for t_ind in range(len(tasks)):
+        task_buckets[t_ind % number_of_buckets].append(tasks[t_ind])
+
+    processed = [pool.apply_async(genetic_tasks, args=(t,)) for t in task_buckets]
+    [bucket.wait() for bucket in processed]
+    processed = [result for bucket in processed for task in bucket.get(timeout=1) for result in task]
+
+    return processed
+
 def genetic_tasks(graphs: [[nx.Graph]]) -> [[nx.Graph]]:
     results = []
     for g in graphs:
-        if len(g) == 1:
-            results.append([mutation(g[0])])
-        if len(g) == 2:
-            results.append([item for item in crossover(g[0], g[1])])
+        if g[0] == mut_id:
+            results.append([mutation(g[1], g[2])])
+        if g[0] == cross_id:
+            results.append([item for item in crossover(g[1], g[2])])
     return results
 
 # def genetic_task(graph1: nx.Graph, graph2: nx.Graph) -> [nx.Graph]:

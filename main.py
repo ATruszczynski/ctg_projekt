@@ -1,5 +1,6 @@
 from graph_utility import *
 from ga_coloring import *
+from graph_set_preparator import *
 
 
 path = 'C:\\Users\\aleks\\Desktop\\inithx.i.3.col'
