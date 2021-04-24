@@ -12,43 +12,29 @@ test_dir = "tests"
 algorithms = []
 
 verb = 1
-pool_c = 10
+pool_c = 12
 
-# algorithms.append(GA_Tuple(repetitions=1, pop_count=2, iterations=2, mprob=0.2, cprob=0.2, selected=10,
-#                            patience=100, fix_prob=0.01, mutate_ver_prob=0.001,
-#                            random_init=True, pool_count=12, verbal=verb))
-# algorithms.append(GA_Tuple(repetitions=5, pop_count=10, iterations=100, mprob=0.01, cprob=0.8, selected=10,
-#                            patience=100, fix_prob=0.1, mutate_ver_prob=0.25,
-#                            random_init=True, pool_count=pool_c, verbal=verb))
-# algorithms.append(GA_Tuple(repetitions=5, pop_count=100, iterations=100, mprob=0.01, cprob=0.8, selected=10,
-#                            patience=100, fix_prob=0.1, mutate_ver_prob=0.1,
-#                            random_init=True, pool_count=pool_c, verbal=verb))
-# algorithms.append(GA_Tuple(repetitions=5, pop_count=100, iterations=100, mprob=0.8, cprob=0.8, selected=10,
-#                            patience=100, fix_prob=0.1, mutate_ver_prob=0.01,
-#                            random_init=True, pool_count=pool_c, verbal=verb))
-# algorithms.append(GA_Tuple(repetitions=5, pop_count=200, iterations=100000, mprob=0.01, cprob=0.8, selected=10,
-#                            patience=100, fix_prob=0.1, mutate_ver_prob=0.01,
-#                            random_init=True, pool_count=pool_c, verbal=verb))
-# algorithms.append(GA_Tuple(repetitions=5, pop_count=200, iterations=100000, mprob=0.02, cprob=0.8, selected=10,
-#                            patience=100, fix_prob=0.1, mutate_ver_prob=0.01,
-#                            random_init=True, pool_count=pool_c, verbal=verb))
-# algorithms.append(GA_Tuple(repetitions=5, pop_count=200, iterations=100000, mprob=0.01, cprob=0.8, selected=10,
-#                            patience=100, fix_prob=0.1, mutate_ver_prob=0.02,
-#                            random_init=True, pool_count=pool_c, verbal=verb))
-# algorithms.append(GA_Tuple(repetitions=5, pop_count=100, iterations=100, mprob=0.0, cprob=0.8, selected=10,
+algorithms.append(GA_Tuple(repetitions=4, pop_count=10, iterations=20, mprob=0.2, cprob=0.8, selected=10,
+                           patience=100, fix_prob=0.1, mutate_ver_prob=0.01,
+                           random_init=False, pool_count=pool_c, verbal=verb))
+# algorithms.append(Pure_Greed_Tuple(repetitions=5))
+# algorithms.append(Greed_Tuple(repetitions=6))
+# algorithms.append(DSatur_Tuple(repetitions=7))
+# algorithms.append(GA_Tuple(repetitions=3, pop_count=100, iterations=100, mprob=0.01, cprob=0.8, selected=10,
 #                            patience=100, fix_prob=0.01, mutate_ver_prob=0.01,
 #                            random_init=False, pool_count=pool_c, verbal=verb))
-# algorithms.append(GA_Tuple(repetitions=5, pop_count=100, iterations=100, mprob=0.01, cprob=0.8, selected=10,
-#                            patience=100, fix_prob=0.1, mutate_ver_prob=0.01,
-#                            random_init=True, pool_count=pool_c, verbal=verb))
-# algorithms.append(GA_Tuple(repetitions=5, pop_count=100, iterations=100, mprob=0.0, cprob=0.8, selected=10,
+# algorithms.append(GA_Tuple(repetitions=3, pop_count=100, iterations=100, mprob=0.01, cprob=0.5, selected=10,
 #                            patience=100, fix_prob=0.01, mutate_ver_prob=0.01,
-#                            random_init=True, pool_count=pool_c, verbal=verb))
-algorithms.append(GA_Tuple(repetitions=5, pop_count=10, iterations=10, mprob=1, cprob=1, selected=10,
-                           patience=100, fix_prob=0.0, mutate_ver_prob=0.01,
-                           random_init=True, pool_count=pool_c, verbal=verb))
+#                            random_init=False, pool_count=pool_c, verbal=verb))
+# algorithms.append(GA_Tuple(repetitions=3, pop_count=100, iterations=100, mprob=0.05, cprob=0.8, selected=10,
+#                            patience=100, fix_prob=0.01, mutate_ver_prob=0.01,
+#                            random_init=False, pool_count=pool_c, verbal=verb))
+# algorithms.append(GA_Tuple(repetitions=3, pop_count=100, iterations=100, mprob=0.01, cprob=0.8, selected=10,
+#                            patience=100, fix_prob=0.01, mutate_ver_prob=0.05,
+#                            random_init=False, pool_count=pool_c, verbal=verb))
 
 
+# TODO test if algo returns good colorings
 def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [str]:
     records = []
     for ind in range(len(algos)):
@@ -57,14 +43,24 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
         record = f"{graph_name}"
         if type(algo) is GA_Tuple:
             record += ",GA"
+        elif type(algo) is Pure_Greed_Tuple:
+            record += ",PGreed"
+        elif type(algo) is Greed_Tuple:
+            record += ",Greed"
+        elif type(algo) is DSatur_Tuple:
+            record += ",DSatur"
 
-            iterations = algo.repetitions
+        repetitions = algo.repetitions
 
-            min_cost = math.inf
-            total_cost = 0
-            total_time = 0
+        min_cost = math.inf
+        total_cost = 0
+        total_time = 0
 
-            for i in range(iterations):
+        for i in range(repetitions):
+            start = end = 0
+            coloring = None
+
+            if type(algo) is GA_Tuple:
                 start = time.time()
                 coloring = genetic_coloring(graph=graph, pop_count=algo.pop_count, iterations=algo.iterations,
                                             mprob=algo.mprob, cprob=algo.cprob, selected=algo.selected, verbal=algo.verbal,
@@ -72,21 +68,50 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
                                             mutate_ver_prob=algo.mutate_ver_prob, random_init=algo.random_init)
                 end = time.time()
 
-                cost = coloring_cost(coloring)
-                if cost < min_cost:
-                    min_cost = cost
+            elif type(algo) is Pure_Greed_Tuple:
+                start = time.time()
+                coloring = greedy_coloring(graph=graph)
+                end = time.time()
 
-                total_cost += cost
-                total_time += end - start
+            elif type(algo) is Greed_Tuple:
+                start = time.time()
+                # TODO Podmienić na wywołanie algorytmu greedy
+                coloring = greedy_coloring(graph=graph)
+                end = time.time()
 
-            record += f",{round(total_cost/iterations, 3)},{min_cost}"
-            record += f",{round(total_time/iterations/stu, 3)}"
-            record += f",{algo.repetitions}|{algo.pop_count}|{algo.iterations}|{algo.mprob}|{algo.cprob}|" \
+            elif type(algo) is DSatur_Tuple:
+                start = time.time()
+                # TODO Podmienić na wywołanie algorytmu DSatur
+                coloring = greedy_coloring(graph=graph)
+                end = time.time()
+
+            assert check_correctness_of_coloring(coloring)
+            cost = coloring_cost(coloring)
+            if cost < min_cost:
+                min_cost = cost
+
+            total_cost += cost
+            total_time += end - start
+
+        record += f",{round(total_cost/repetitions, 3)},{min_cost}"
+        record += f",{round(total_time/repetitions/stu, 3)}"
+
+        record += f",{algo.repetitions}"
+
+        if type(algo) is GA_Tuple:
+            record += f"|{algo.pop_count}|{algo.iterations}|{algo.mprob}|{algo.cprob}|" \
                       f"{algo.selected}|{algo.patience}|{algo.fix_prob}|{algo.mutate_ver_prob}|{algo.random_init}"
+        if type(algo) is Greed_Tuple:
+            # TODO Dodać parametry Greedy do record (jeśli jakieś są)
+            pass
+        if type(algo) is DSatur_Tuple:
+            # TODO Dodać parametry DSatur do record (jeśli jakieś są)
+            pass
 
         records.append(record)
 
     return records
+
 
 def test_for_graphs(graphs: [nx.Graph], algos: [AlgoTuple], test_dir: str, stu_size: int = 500) -> [str]:
     stu = calculate_stu(stu_size)
@@ -133,7 +158,7 @@ def calculate_stu(size: int = 500, rep: int = 10):
 
     return time_sum/rep
 
+
 if __name__ == '__main__':
-    # print(test(graph, "desu", test_tuples, ""))
-    graphs = read_many_graph_files("instances", 0, 3)
-    test_for_graphs(graphs, algorithms, test_dir, 500)
+    graphs = read_many_graph_files("instances", 0, 2)
+    test_for_graphs(graphs, algorithms, test_dir, 50)

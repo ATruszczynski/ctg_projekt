@@ -59,6 +59,7 @@ def get_colors_of_neighbors(graph: nx.Graph, vertex: int) -> [int]:
 
     return adj_colors
 
+#TODO losowa kolejność i deterministyczna jako parametr?
 def greedy_coloring(graph: nx.Graph, order: [int] = None) -> nx.Graph:
     if order is None:
         order = nx.dfs_preorder_nodes(graph)
@@ -77,6 +78,18 @@ def greedy_coloring(graph: nx.Graph, order: [int] = None) -> nx.Graph:
         graph.nodes[v][color] = c_col
 
     return graph
+
+
+def check_correctness_of_coloring(graph: nx.Graph) -> bool:
+    for v in graph.nodes:
+        cv = graph.nodes[v][color]
+        neighbors = graph.adj[v]
+        for n in neighbors:
+            cn = graph.nodes[n][color]
+            if cv == cn:
+                return False
+    return True
+
 
 def random_correct_coloring(graph: nx.Graph) -> nx.Graph:
     graph = graph.copy()
@@ -137,6 +150,24 @@ def get_color_counts(graph: nx.Graph):
             color_count[c] = 1
 
     return color_count
+
+def get_values_in_color(graph: nx.Graph):
+    values_in_color = {}
+
+    for v in graph:
+        c = graph.nodes[v][color]
+        w = graph.nodes[v][weight]
+
+        if c in values_in_color:
+            values_in_color[c].append(w)
+        else:
+            values_in_color[c] = [w]
+
+    for v in values_in_color:
+        values_in_color[v].sort(reverse=True)
+
+    return values_in_color
+
 
 def print_graph(graph: nx.Graph):
     for v in graph.nodes:

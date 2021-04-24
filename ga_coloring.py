@@ -36,24 +36,67 @@ def mutation(graph: nx.Graph, ver_mut_prob: float) -> nx.Graph:
     return graph
 
 def local_reduction(graph: nx.Graph, index: int, allow_increase: bool = True):
+    # graph = graph.copy()
+    # adj_colors = get_colors_of_neighbors(graph, index)
+    #
+    # used_colors = get_colors_used(graph)
+    #
+    # max_c = None
+    # max_score = fitness_func(graph)
+    # for c in used_colors:
+    #     if c is not graph.nodes[index][color] and c not in adj_colors:
+    #         graph_c = graph.copy()
+    #         graph_c.nodes[index][color] = c
+    #         score = fitness_func(graph_c)
+    #         if score > max_score:
+    #             max_score = score
+    #             max_c = c
+    #
+    # if max_c is not None:
+    #     chosen_color = max_c
+    # elif allow_increase:
+    #     chosen_color = lowest_unused_color(used_colors)
+    # else:
+    #     chosen_color = graph.nodes[index][color]
+    #
+    # graph.nodes[index][color] = chosen_color
+    #
+    # return graph
+
     graph = graph.copy()
     adj_colors = get_colors_of_neighbors(graph, index)
-
+    curr_color = graph.nodes[index][color]
+    curr_weigh = graph.nodes[index][weight]
     used_colors = get_colors_used(graph)
+    values_in_color = get_values_in_color(graph)
 
-    max_c = None
-    max_score = fitness_func(graph)
-    for c in used_colors:
-        if c is not graph.nodes[index][color] and c not in adj_colors:
-            graph_c = graph.copy()
-            graph_c.nodes[index][color] = c
-            score = fitness_func(graph_c)
-            if score > max_score:
-                max_score = score
-                max_c = c
+    min_c = None
+    min_diff = 0
 
-    if max_c is not None:
-        chosen_color = max_c
+    # to nie jest ani ładne, ani czytelne, ale za to jest szybkie
+    if values_in_color[curr_color][0] == curr_weigh: # wybrany wierzchołek jest najcięższy w swoim kolorze, czyli przerzucenie go do innego koloru może poprawić wynik grafu
+                                                     # wpp. przerzucenie do innego koloru jest neutralne lub pogarsza
+        for c in used_colors:
+            if c is not curr_color and c not in adj_colors:
+                curr_diff = math.inf
+                other_weight = values_in_color[c][0]
+
+                second_weight = 0
+                if len(values_in_color[curr_color]) > 1:
+                    second_weight = values_in_color[curr_color][1]
+
+                if curr_weigh < other_weight: # przerzucenie to tego koloru to zysk
+                    curr_diff = second_weight - curr_weigh
+
+                if curr_weigh >= other_weight: # przerzucenie do tego koloru to MOŻE zysk
+                    curr_diff = curr_weigh - other_weight
+
+                if curr_diff < min_diff:
+                    min_diff = curr_diff
+                    min_c = c
+
+    if min_c is not None:
+        chosen_color = min_c
     elif allow_increase:
         chosen_color = lowest_unused_color(used_colors)
     else:
@@ -62,6 +105,8 @@ def local_reduction(graph: nx.Graph, index: int, allow_increase: bool = True):
     graph.nodes[index][color] = chosen_color
 
     return graph
+
+
 
 def crossover(graph1: nx.Graph, graph2: nx.Graph) -> (nx.Graph, nx.Graph):
     graph1 = graph1.copy()
@@ -95,6 +140,7 @@ def tournament_selection(colorings: [nx.Graph], participant_count: int) -> nx.Gr
 
     return chosen[0].copy()
 
+#TODO iteracja zerowa wydaje sięzajmować jakoś dużo czasu
 def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: float, cprob: float, selected: int, verbal: int = 0, pool_count: int = 12, patience: int = 5, fix_prob: float = 0.1, mutate_ver_prob: float=0.01, random_init: bool = False) -> nx.Graph:
     population = []
     if verbal >= 1:
@@ -213,6 +259,11 @@ def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: fl
         child_population.extend(processed)
         child_population.extend(to_pass)
         assert len(child_population) == pop_count
+
+        for cg in child_population:
+            ok = check_correctness_of_coloring(cg)
+            assert ok
+
 
         population = child_population
 

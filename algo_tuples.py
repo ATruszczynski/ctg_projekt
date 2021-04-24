@@ -1,11 +1,13 @@
 class AlgoTuple:
+    def __init__(self, repetitions: int):
+        self.repetitions = repetitions
     pass
 
 class GA_Tuple (AlgoTuple):
     def __init__(self, repetitions:int, pop_count: int, iterations: int, mprob: float, cprob: float, selected: int, verbal: int = 0,
                  patience: int = 5, fix_prob: float = 0.1, mutate_ver_prob: float = 0.01,
                  random_init: bool = False, pool_count: int = 12):
-        self.repetitions = repetitions
+        super().__init__(repetitions)
         self.pop_count = pop_count
         self.iterations = iterations
         self.mprob = mprob
@@ -17,3 +19,22 @@ class GA_Tuple (AlgoTuple):
         self.fix_prob = fix_prob
         self.mutate_ver_prob = mutate_ver_prob
         self.random_init = random_init
+
+
+class Pure_Greed_Tuple(AlgoTuple):
+    def __init__(self, repetitions: int):
+        super().__init__(repetitions)
+
+
+class Greed_Tuple(AlgoTuple):
+    def __init__(self, repetitions: int):
+        super().__init__(repetitions)
+
+
+class DSatur_Tuple(AlgoTuple):
+    def __init__(self, repetitions: int):
+        super().__init__(repetitions)
+
+
+
+
