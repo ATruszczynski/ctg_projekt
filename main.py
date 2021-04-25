@@ -23,11 +23,11 @@ if __name__ == '__main__':
     graph = greedy_coloring(graph)
     print()
     print_graph(graph)
-    print(coloring_cost(graph))
+    print(get_coloring_cost(graph))
 
     graph = genetic_coloring(graph, 100, 20, 0.8, 0.8, 5, patience=10)
     print()
     # print_graph(graph)
-    print(coloring_cost(graph))
+    print(get_coloring_cost(graph))
 
 

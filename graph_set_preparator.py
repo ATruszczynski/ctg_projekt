@@ -22,7 +22,7 @@ def read_graph_file(path: str) -> nx.Graph:
         elif type == 'e':
             graph.add_edge(int(elements[1]) - 1, int(elements[2]) - 1)
         elif type == 'w':
-            graph.nodes[int(elements[1]) - 1][weight] = int(elements[2])
+            graph.nodes[int(elements[1]) - 1][weight_key] = int(elements[2])
 
     return graph
 
@@ -30,32 +30,40 @@ def weight_graph_randomly(graph: nx.Graph, minWeight: int, maxWeight: int) -> nx
     graph = graph.copy()
     weights = []
     for v in graph.nodes:
-        if weight not in graph.nodes[v]:
+        if weight_key not in graph.nodes[v]:
             weights.append(random.randrange(minWeight, maxWeight))
         else:
-            weights.append(graph.nodes[v][weight])
+            weights.append(graph.nodes[v][weight_key])
 
     return weight_graph(graph, weights)
 
-def read_many_graph_files(mypath: str, start_ind: int = 0, how_many: int = 10, minWeight: int = 1, maxWeight: int = 100) -> [nx.Graph]: # wczytuje pliki z grafami od indeksu w porządku alfabetycznym
+
+# zwraca pary (graf, nazwa_grafu)
+def read_many_graph_files(mypath: str, minWeight: int = 1, maxWeight: int = 100, *args) -> [(nx.Graph, str)]: # wczytuje pliki z grafami od indeksu w porządku alfabetycznym
     graph_files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and f.endswith(".col")]
+    graph_files.sort()
 
     result = []
+    if len(args) % 2 == 1 or len(args) <= 0:
+        raise Exception("Incorrect amount of parameters")
 
-    for ind in range(start_ind, start_ind + how_many):
-        if ind >= len(graph_files):
-            break
-        gf = graph_files[ind]
-        ftl = gf[0:3]
-        random.seed(ord(ftl[0]) * ord(ftl[1]) * ord(ftl[2])) # jednoznaczne ziarno oparte na nazwie grafu (żeby graf miał zawsze tak samo ważone wierzchołki)
+    for pair_ind in range(0, len(args), 2):
+        start_ind = args[pair_ind]
+        how_many = args[pair_ind + 1]
+        for ind in range(start_ind, start_ind + how_many):
+            if ind >= len(graph_files):
+                break
+            gf = graph_files[ind]
+            ftl = gf[0:3]
+            random.seed(ord(ftl[0]) * ord(ftl[1]) * ord(ftl[2])) # jednoznaczne ziarno oparte na nazwie grafu (żeby graf miał zawsze tak samo ważone wierzchołki)
 
-        graph = read_graph_file(join(mypath, gf))
-        graph = weight_graph_randomly(graph, minWeight, maxWeight)
-        name_parts = gf.split('.')
-        name = ""
-        for i in range(0, len(name_parts) - 1):
-            name += name_parts[i]
-        result.append((graph, name))
+            graph = read_graph_file(join(mypath, gf))
+            graph = weight_graph_randomly(graph, minWeight, maxWeight)
+            name_parts = gf.split('.')
+            name = ""
+            for i in range(0, len(name_parts) - 1):
+                name += name_parts[i]
+            result.append((graph, name))
 
     return result
 

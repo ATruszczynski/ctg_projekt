@@ -9,15 +9,19 @@ from algo_tuples import *
 path = 'C:\\Users\\aleks\\Desktop\\inithx.i.3.col'
 test_dir = "tests"
 
-algorithms = []
+algorithms_extensive = []
 
 verb = 1
 pool_c = 12
 
-algorithms.append(GA_Tuple(repetitions=4, pop_count=10, iterations=20, mprob=0.2, cprob=0.8, selected=10,
-                           patience=100, fix_prob=0.1, mutate_ver_prob=0.01,
-                           random_init=False, pool_count=pool_c, verbal=verb))
-# algorithms.append(Pure_Greed_Tuple(repetitions=5))
+algorithms_extensive.append(GA_Tuple(repetitions=3, pop_count=50, iterations=100, mprob=0.02, cprob=0.8, selected=3,
+                                     patience=300, fix_prob=1, mutate_ver_prob=0.02,
+                                     random_init=False, pool_count=pool_c, verbal=verb))
+
+# algorithms.append(GA_Tuple(repetitions=2, pop_count=30, iterations=10, mprob=0.02, cprob=0.8, selected=10,
+#                                                                                                          patience=100, fix_prob=0.1, mutate_ver_prob=0.01,
+#                                                                                                          random_init=True, pool_count=pool_c, verbal=verb))
+# algorithms.append(RVC_Tuple(repetitions=5))
 # algorithms.append(Greed_Tuple(repetitions=6))
 # algorithms.append(DSatur_Tuple(repetitions=7))
 # algorithms.append(GA_Tuple(repetitions=3, pop_count=100, iterations=100, mprob=0.01, cprob=0.8, selected=10,
@@ -33,8 +37,6 @@ algorithms.append(GA_Tuple(repetitions=4, pop_count=10, iterations=20, mprob=0.2
 #                            patience=100, fix_prob=0.01, mutate_ver_prob=0.05,
 #                            random_init=False, pool_count=pool_c, verbal=verb))
 
-
-# TODO test if algo returns good colorings
 def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [str]:
     records = []
     for ind in range(len(algos)):
@@ -49,6 +51,8 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
             record += ",Greed"
         elif type(algo) is DSatur_Tuple:
             record += ",DSatur"
+        elif type(algo) is RVC_Tuple:
+            record += ",RVC"
 
         repetitions = algo.repetitions
 
@@ -73,6 +77,11 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
                 coloring = greedy_coloring(graph=graph)
                 end = time.time()
 
+            elif type(algo) is RVC_Tuple:
+                start = time.time()
+                coloring = random_proper_coloring(graph=graph)
+                end = time.time()
+
             elif type(algo) is Greed_Tuple:
                 start = time.time()
                 # TODO Podmienić na wywołanie algorytmu greedy
@@ -85,8 +94,8 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
                 coloring = greedy_coloring(graph=graph)
                 end = time.time()
 
-            assert check_correctness_of_coloring(coloring)
-            cost = coloring_cost(coloring)
+            assert check_if_coloring_is_proper(coloring)
+            cost = get_coloring_cost(coloring)
             if cost < min_cost:
                 min_cost = cost
 
@@ -112,8 +121,8 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
 
     return records
 
-
-def test_for_graphs(graphs: [nx.Graph], algos: [AlgoTuple], test_dir: str, stu_size: int = 500) -> [str]:
+# graphs to lista par (graf, nazwa_grafu)
+def test_for_graphs(graphs: [(nx.Graph, str)], algos: [AlgoTuple], test_dir: str, stu_size: int = 500) -> [str]:
     stu = calculate_stu(stu_size)
     result = []
 
@@ -160,5 +169,6 @@ def calculate_stu(size: int = 500, rep: int = 10):
 
 
 if __name__ == '__main__':
-    graphs = read_many_graph_files("instances", 0, 2)
-    test_for_graphs(graphs, algorithms, test_dir, 50)
+    graphs = read_many_graph_files("instances", 1, 100, 0, 2, 5, 1, 7, 1, 11, 1, 26, 1, 34, 5, 46, 3)
+    # graphs = read_many_graph_files("instances", 1, 100, 2, 100)
+    test_for_graphs(graphs, algorithms_extensive, test_dir, 50)
