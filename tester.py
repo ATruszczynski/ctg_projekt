@@ -18,6 +18,7 @@ algorithms_extensive.append(GA_Tuple(repetitions=3, pop_count=50, iterations=100
                                      patience=300, fix_prob=1, mutate_ver_prob=0.02,
                                      random_init=False, pool_count=pool_c, verbal=verb))
 
+
 # algorithms.append(GA_Tuple(repetitions=2, pop_count=30, iterations=10, mprob=0.02, cprob=0.8, selected=10,
 #                                                                                                          patience=100, fix_prob=0.1, mutate_ver_prob=0.01,
 #                                                                                                          random_init=True, pool_count=pool_c, verbal=verb))
@@ -41,7 +42,7 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
     records = []
     for ind in range(len(algos)):
         algo = algos[ind]
-        print(f"Test {ind+1}/{len(algos)}")
+        print(f"Test {ind + 1}/{len(algos)}")
         record = f"{graph_name}"
         if type(algo) is GA_Tuple:
             record += ",GA"
@@ -67,7 +68,8 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
             if type(algo) is GA_Tuple:
                 start = time.time()
                 coloring = genetic_coloring(graph=graph, pop_count=algo.pop_count, iterations=algo.iterations,
-                                            mprob=algo.mprob, cprob=algo.cprob, selected=algo.selected, verbal=algo.verbal,
+                                            mprob=algo.mprob, cprob=algo.cprob, selected=algo.selected,
+                                            verbal=algo.verbal,
                                             pool_count=algo.pool_count, patience=algo.patience, fix_prob=algo.fix_prob,
                                             mutate_ver_prob=algo.mutate_ver_prob, random_init=algo.random_init)
                 end = time.time()
@@ -102,8 +104,8 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
             total_cost += cost
             total_time += end - start
 
-        record += f",{round(total_cost/repetitions, 3)},{min_cost}"
-        record += f",{round(total_time/repetitions/stu, 3)}"
+        record += f",{round(total_cost / repetitions, 3)},{min_cost}"
+        record += f",{round(total_time / repetitions / stu, 3)}"
 
         record += f",{algo.repetitions}"
 
@@ -121,6 +123,7 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
 
     return records
 
+
 # graphs to lista par (graf, nazwa_grafu)
 def test_for_graphs(graphs: [(nx.Graph, str)], algos: [AlgoTuple], test_dir: str, stu_size: int = 500) -> [str]:
     stu = calculate_stu(stu_size)
@@ -129,7 +132,8 @@ def test_for_graphs(graphs: [(nx.Graph, str)], algos: [AlgoTuple], test_dir: str
     if not os.path.exists(test_dir):
         os.mkdir(test_dir)
     now = datetime.datetime.now()
-    file = open(f"{test_dir}{os.path.sep}tests_{now.year}_{now.month}_{now.day}_{now.hour}_{now.minute}_{now.second}.csv", "w")
+    file = open(
+        f"{test_dir}{os.path.sep}tests_{now.year}_{now.month}_{now.day}_{now.hour}_{now.minute}_{now.second}.csv", "w")
 
     file.write("name,algorithm,avg_cost,min_cost,avg_time,parameters\n")
 
@@ -150,7 +154,7 @@ def calculate_stu(size: int = 500, rep: int = 10):
     graph = nx.Graph()
     graph.add_nodes_from(vert)
     for i in range(len(vert)):
-        for j in range(i+1, len(vert)):
+        for j in range(i + 1, len(vert)):
             graph.add_edge(i, j)
 
     time_sum = 0
@@ -161,11 +165,11 @@ def calculate_stu(size: int = 500, rep: int = 10):
         _ = greedy_coloring(graph_to_col)
         end = time.time()
 
-        print(f'STU - {i+1}/{rep}')
+        print(f'STU - {i + 1}/{rep}')
 
         time_sum += end - start
 
-    return time_sum/rep
+    return time_sum / rep
 
 
 if __name__ == '__main__':

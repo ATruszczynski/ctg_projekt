@@ -3,6 +3,7 @@ from graph_utility import *
 from os import listdir
 from os.path import isfile, join
 
+
 def read_graph_file(path: str) -> nx.Graph:
     graph_file = open(path, 'r')
     lines = graph_file.readlines()
@@ -26,7 +27,8 @@ def read_graph_file(path: str) -> nx.Graph:
 
     return graph
 
-def weight_graph_randomly(graph: nx.Graph, minWeight: int, maxWeight: int) -> nx.Graph: # uzupełnia brakujące(!) wagi
+
+def weight_graph_randomly(graph: nx.Graph, minWeight: int, maxWeight: int) -> nx.Graph:  # uzupełnia brakujące(!) wagi
     graph = graph.copy()
     weights = []
     for v in graph.nodes:
@@ -39,7 +41,8 @@ def weight_graph_randomly(graph: nx.Graph, minWeight: int, maxWeight: int) -> nx
 
 
 # zwraca pary (graf, nazwa_grafu)
-def read_many_graph_files(mypath: str, minWeight: int = 1, maxWeight: int = 100, *args) -> [(nx.Graph, str)]: # wczytuje pliki z grafami od indeksu w porządku alfabetycznym
+def read_many_graph_files(mypath: str, minWeight: int = 1, maxWeight: int = 100, *args) -> [
+    (nx.Graph, str)]:  # wczytuje pliki z grafami od indeksu w porządku alfabetycznym
     graph_files = [f for f in listdir(mypath) if isfile(join(mypath, f)) and f.endswith(".col")]
     graph_files.sort()
 
@@ -55,7 +58,8 @@ def read_many_graph_files(mypath: str, minWeight: int = 1, maxWeight: int = 100,
                 break
             gf = graph_files[ind]
             ftl = gf[0:3]
-            random.seed(ord(ftl[0]) * ord(ftl[1]) * ord(ftl[2])) # jednoznaczne ziarno oparte na nazwie grafu (żeby graf miał zawsze tak samo ważone wierzchołki)
+            random.seed(ord(ftl[0]) * ord(ftl[1]) * ord(ftl[
+                                                            2]))  # jednoznaczne ziarno oparte na nazwie grafu (żeby graf miał zawsze tak samo ważone wierzchołki)
 
             graph = read_graph_file(join(mypath, gf))
             graph = weight_graph_randomly(graph, minWeight, maxWeight)
@@ -66,4 +70,3 @@ def read_many_graph_files(mypath: str, minWeight: int = 1, maxWeight: int = 100,
             result.append((graph, name))
 
     return result
-

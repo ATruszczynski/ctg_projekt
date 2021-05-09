@@ -11,7 +11,10 @@ score_id = 's'
 mut_id = 'M'
 cross_id = 'C'
 
-def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: float, cprob: float, selected: int, verbal: int = 0, pool_count: int = 12, patience: int = 5, fix_prob: float = 0.1, mutate_ver_prob: float=0.01, random_init: bool = False) -> nx.Graph:
+
+def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: float, cprob: float, selected: int,
+                     verbal: int = 0, pool_count: int = 12, patience: int = 5, fix_prob: float = 0.1,
+                     mutate_ver_prob: float = 0.01, random_init: bool = False) -> nx.Graph:
     pool = mp.Pool(pool_count)
 
     if verbal >= 1:
@@ -45,7 +48,7 @@ def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: fl
                 print(f',{it}', end="")
 
         for ind in range(len(population)):
-            fitness_func(population[ind]) # ustawia score grafu
+            fitness_func(population[ind])  # ustawia score grafu
 
         next_pop_count = 0
         crossover_tasks = []
@@ -117,7 +120,9 @@ def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: fl
                 coloring_cost_avg += col_cost
             coloring_cost_avg = round(coloring_cost_avg / len(population), 2)
 
-            print(f"({coloring_cost_min}, {coloring_cost_avg}, {round((coloring_cost_avg - coloring_cost_min) / coloring_cost_avg, 2)})", end="")
+            print(
+                f"({coloring_cost_min}, {coloring_cost_avg}, {round((coloring_cost_avg - coloring_cost_min) / coloring_cost_avg, 2)})",
+                end="")
             if it > 0 and it % 10 == 0:
                 print()
 
@@ -129,7 +134,7 @@ def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: fl
 
     pool.close()
     for ind in range(len(population)):
-        fitness_func(population[ind]) # ustawia score graów
+        fitness_func(population[ind])  # ustawia score graów
 
     population = sorted(population, key=lambda x: x.graph[score_id], reverse=True)
 
@@ -139,17 +144,19 @@ def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: fl
 
     return best.copy()
 
+
 def fitness_func(graph: nx.Graph) -> int:
     cost = get_coloring_cost(graph)
     weigt_s = graph.graph[weight_sum_key]
 
     diff_cols = len(get_used_colors(graph))
 
-    graph_score = (weigt_s - cost)/weigt_s
+    graph_score = (weigt_s - cost) / weigt_s
 
     graph.graph[score_id] = graph_score
 
     return graph_score
+
 
 def crossover(graph1: nx.Graph, graph2: nx.Graph) -> (nx.Graph, nx.Graph):
     graph1 = graph1.copy()
@@ -168,6 +175,7 @@ def crossover(graph1: nx.Graph, graph2: nx.Graph) -> (nx.Graph, nx.Graph):
 
     return graph1, graph2
 
+
 def tournament_selection(colorings: [nx.Graph], participant_count: int) -> nx.Graph:
     if participant_count > len(colorings):
         participant_count = len(colorings)
@@ -183,6 +191,7 @@ def tournament_selection(colorings: [nx.Graph], participant_count: int) -> nx.Gr
 
     return chosen[0].copy()
 
+
 def mutation(graph: nx.Graph, ver_mut_prob: float) -> nx.Graph:
     # print('Mutation')
     # print(os.getpid())
@@ -195,7 +204,8 @@ def mutation(graph: nx.Graph, ver_mut_prob: float) -> nx.Graph:
 
     return graph
 
-def attempt_to_eliminate_small_colors(graph: nx.Graph, prob: float=0.1):
+
+def attempt_to_eliminate_small_colors(graph: nx.Graph, prob: float = 0.1):
     graph = graph.copy()
     color_count = get_color_counts(graph)
     colors_to_eliminate = []
@@ -211,6 +221,7 @@ def attempt_to_eliminate_small_colors(graph: nx.Graph, prob: float=0.1):
 
     return graph
 
+
 def local_reduction(graph: nx.Graph, index: int, allow_increase: bool = True):
     graph = graph.copy()
     adj_colors = get_colors_of_neighbors(graph, index)
@@ -223,8 +234,9 @@ def local_reduction(graph: nx.Graph, index: int, allow_increase: bool = True):
     min_diff = 0
 
     # to nie jest ani ładne, ani czytelne, ale za to jest szybkie
-    if values_in_color[curr_color][0] == curr_weigh: # wybrany wierzchołek jest najcięższy w swoim kolorze, czyli przerzucenie go do innego koloru może poprawić wynik grafu
-                                                     # wpp. przerzucenie do innego koloru jest neutralne lub pogarsza
+    if values_in_color[curr_color][
+        0] == curr_weigh:  # wybrany wierzchołek jest najcięższy w swoim kolorze, czyli przerzucenie go do innego koloru może poprawić wynik grafu
+        # wpp. przerzucenie do innego koloru jest neutralne lub pogarsza
         for c in used_colors:
             if c is not curr_color and c not in adj_colors:
                 curr_diff = math.inf
@@ -234,10 +246,10 @@ def local_reduction(graph: nx.Graph, index: int, allow_increase: bool = True):
                 if len(values_in_color[curr_color]) > 1:
                     second_weight = values_in_color[curr_color][1]
 
-                if curr_weigh < other_weight: # przerzucenie to tego koloru to zysk
+                if curr_weigh < other_weight:  # przerzucenie to tego koloru to zysk
                     curr_diff = second_weight - curr_weigh
 
-                if curr_weigh >= other_weight: # przerzucenie do tego koloru to MOŻE zysk
+                if curr_weigh >= other_weight:  # przerzucenie do tego koloru to MOŻE zysk
                     curr_diff = curr_weigh - other_weight
 
                 if curr_diff < min_diff:
@@ -255,6 +267,7 @@ def local_reduction(graph: nx.Graph, index: int, allow_increase: bool = True):
 
     return graph
 
+
 def async_process_genetic_tasks(pool, pool_count, tasks):
     number_of_buckets = pool_count
     task_buckets = []
@@ -269,6 +282,7 @@ def async_process_genetic_tasks(pool, pool_count, tasks):
 
     return processed
 
+
 def genetic_tasks(graphs: [[nx.Graph]]) -> [[nx.Graph]]:
     results = []
     for g in graphs:
@@ -277,6 +291,7 @@ def genetic_tasks(graphs: [[nx.Graph]]) -> [[nx.Graph]]:
         if g[0] == cross_id:
             results.append([item for item in crossover(g[1], g[2])])
     return results
+
 
 def quick_graph_coloring_async(pool: mp.Pool, color_func, tasks):
     pool_count = pool._processes
@@ -294,6 +309,7 @@ def quick_graph_coloring_async(pool: mp.Pool, color_func, tasks):
 
     return processed
 
+
 def color_greed_many_graphs(graphs: [nx.Graph]):
     colored = []
     for g in graphs:
@@ -301,12 +317,10 @@ def color_greed_many_graphs(graphs: [nx.Graph]):
 
     return colored
 
+
 def color_random_many_graphs(graphs: [nx.Graph]):
     colored = []
     for g in graphs:
         colored.append(random_proper_coloring(g))
 
     return colored
-
-
-

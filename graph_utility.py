@@ -6,6 +6,7 @@ color_key = 'c'
 weight_key = 'w'
 weight_sum_key = 'ws'
 
+
 # proste kolorowania
 
 def greedy_coloring(graph: nx.Graph, order: [int] = None) -> nx.Graph:
@@ -20,6 +21,7 @@ def greedy_coloring(graph: nx.Graph, order: [int] = None) -> nx.Graph:
         graph.nodes[v][color_key] = lowest_color
 
     return graph
+
 
 def random_proper_coloring(graph: nx.Graph) -> nx.Graph:
     graph = graph.copy()
@@ -70,6 +72,7 @@ def get_coloring_cost(graph: nx.Graph) -> int:
 
     return sum(colors_weights.values())
 
+
 def get_colors_of_neighbors(graph: nx.Graph, vertex: int) -> [int]:
     adj = graph.adj[vertex]
     adj_colors = []
@@ -81,6 +84,7 @@ def get_colors_of_neighbors(graph: nx.Graph, vertex: int) -> [int]:
                 adj_colors.append(c)
 
     return adj_colors
+
 
 def check_if_coloring_is_proper(graph: nx.Graph) -> bool:
     for v in graph.nodes:
@@ -94,6 +98,7 @@ def check_if_coloring_is_proper(graph: nx.Graph) -> bool:
                 return False
     return True
 
+
 def get_used_colors(graph: nx.Graph) -> [int]:
     colors = []
     for (v, c) in graph.nodes.data(color_key):
@@ -102,12 +107,14 @@ def get_used_colors(graph: nx.Graph) -> [int]:
 
     return colors
 
+
 def check_if_you_can_color_vertex(graph: nx.Graph, vertex: int, color: int) -> bool:
     neigh_col = get_colors_of_neighbors(graph, vertex)
 
     return color not in neigh_col
 
-def get_color_counts(graph: nx.Graph): # ile wierzchołków jest w poszczególnych kolorach
+
+def get_color_counts(graph: nx.Graph):  # ile wierzchołków jest w poszczególnych kolorach
     color_count = {}
 
     for v in graph:
@@ -120,8 +127,9 @@ def get_color_counts(graph: nx.Graph): # ile wierzchołków jest w poszczególny
 
     return color_count
 
-def get_weights_in_color(graph: nx.Graph): # zwraca słownik przypisujący kolorowi malejącą
-                                           # listę wag wierzchołków w tym kolorze
+
+def get_weights_in_color(graph: nx.Graph):  # zwraca słownik przypisujący kolorowi malejącą
+    # listę wag wierzchołków w tym kolorze
     weights_in_colors = {}
 
     for v in graph:
@@ -137,6 +145,7 @@ def get_weights_in_color(graph: nx.Graph): # zwraca słownik przypisujący kolor
         weights_in_colors[v].sort(reverse=True)
 
     return weights_in_colors
+
 
 def get_lowest_natural_not_on_list(colors: [int]):
     chosen_color = 0
@@ -158,10 +167,12 @@ def print_graph(graph: nx.Graph):
 
         print(f'Vertex: {v} - weight: {w} - color: {c}')
 
+
 def print_many_graphs(graphs: [nx.Graph]):
     for i in range(len(graphs)):
         print(f'Graph {i + 1}')
         print_graph(graphs[i])
+
 
 def get_random_permutation_of_list(values: [int]) -> [int]:
     options = list(range(len(values)))
@@ -187,25 +198,10 @@ def color_graph(graph: nx.Graph, colors: [int]) -> nx.Graph:
 
     return graph
 
+
 def get_coloring(graph: nx.Graph) -> [int]:
     coloring = []
     for (v, c) in graph.nodes.data(color_key):
         coloring.append(c)
 
     return coloring
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
