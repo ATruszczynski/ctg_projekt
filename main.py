@@ -3,8 +3,8 @@ from ga_coloring import *
 from graph_set_preparator import *
 
 
-path = 'C:\\Users\\aleks\\Desktop\\inithx.i.3.col'
-
+# path = 'C:\\Users\\aleks\\Desktop\\inithx.i.3.col'
+path = '/Users/tomek/Workspace/ctg_projekt/instances/myciel3.col'
 if __name__ == '__main__':
     graph = read_graph_file(path)
     # graph.remove_nodes_from(list(range(200, 621)))

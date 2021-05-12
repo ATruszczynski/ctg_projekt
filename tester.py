@@ -1,3 +1,4 @@
+from dsatur import get_dsatur_coloring
 from ga_coloring import *
 import networkx as nx
 import time
@@ -5,8 +6,10 @@ import datetime
 import os
 from graph_set_preparator import *
 from algo_tuples import *
+from greedy_coloring import get_greedy_coloring
 
-path = 'C:\\Users\\aleks\\Desktop\\inithx.i.3.col'
+# path = 'C:\\Users\\aleks\\Desktop\\inithx.i.3.col'
+path = '/Users/tomek/Workspace/ctg_projekt/instances/inithx.i.3.col'
 test_dir = "tests"
 
 algorithms_extensive = []
@@ -87,13 +90,13 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
             elif type(algo) is Greed_Tuple:
                 start = time.time()
                 # TODO Podmienić na wywołanie algorytmu greedy
-                coloring = greedy_coloring(graph=graph)
+                coloring = get_greedy_coloring(graph=graph)
                 end = time.time()
 
             elif type(algo) is DSatur_Tuple:
                 start = time.time()
                 # TODO Podmienić na wywołanie algorytmu DSatur
-                coloring = greedy_coloring(graph=graph)
+                coloring = get_dsatur_coloring(graph=graph)
                 end = time.time()
 
             assert check_if_coloring_is_proper(coloring)

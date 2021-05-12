@@ -6,7 +6,7 @@ import numpy as np
 
 from graph_set_preparator import read_graph_file, print_graph, weight_graph_randomly, check_if_coloring_is_proper
 
-example_path = '/Users/tomek/Workspace/ctg_projekt/instances/david.col'
+example_path = '/Users/tomek/Workspace/ctg_projekt/instances/zeroin.i.1.col'
 
 graph = read_graph_file(path=example_path)
 graph = weight_graph_randomly(graph, 10, 100).copy()
@@ -49,6 +49,3 @@ def get_greedy_coloring(graph: nx.Graph) -> nx.Graph:
         print("Improper colouring has been found")
 
     return graph
-
-
-get_greedy_coloring(graph)
