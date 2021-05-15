@@ -17,7 +17,7 @@ test_dir = "tests"
 verb = 0
 pool_c = 12
 
-def test(graph: nx.Graph, graph_name: str, graph_num: int, algos: [AlgoTuple], stu: float) -> [str]:
+def test(graphh: nx.Graph, graph_name: str, graph_num: int, algos: [AlgoTuple], stu: float) -> [str]:
     records = []
     for ind in range(len(algos)):
         algo = algos[ind]
@@ -43,6 +43,7 @@ def test(graph: nx.Graph, graph_name: str, graph_num: int, algos: [AlgoTuple], s
         total_time = 0
 
         for i in range(repetitions):
+            graph = copy.deepcopy(graphh)
             start = end = 0
             coloring = None
 
