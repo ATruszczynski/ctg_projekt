@@ -13,44 +13,9 @@ from dsatur import *
 path = '/Users/tomek/Workspace/ctg_projekt/instances/inithx.i.3.col'
 test_dir = "tests"
 
-algorithms_extensive = []
 
-verb = 1
+verb = 0
 pool_c = 12
-
-# algorithms_extensive.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.0001, cprob=0.8, selected=3,
-#                                      patience=300, fix_prob=1,
-#                                      random_init=False, pool_count=pool_c, verbal=verb))
-# algorithms_extensive.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.0005, cprob=0.8, selected=3,
-#                                      patience=300, fix_prob=1,
-#                                      random_init=False, pool_count=pool_c, verbal=verb))
-# algorithms_extensive.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.001, cprob=0.8, selected=3,
-#                                      patience=300, fix_prob=1,
-#                                      random_init=False, pool_count=pool_c, verbal=verb))
-
-
-# algorithms.append(GA_Tuple(repetitions=2, pop_count=30, iterations=10, mprob=0.02, cprob=0.8, selected=10,
-#                            patience=100, fix_prob=0.1, mutate_ver_prob=0.01,
-#                            random_init=True, pool_count=pool_c, verbal=verb))
-# algorithms.append(RVC_Tuple(repetitions=5))
-# algorithms.append(Greed_Tuple(repetitions=6))
-# algorithms.append(DSatur_Tuple(repetitions=7))
-# algorithms.append(GA_Tuple(repetitions=3, pop_count=100, iterations=100, mprob=0.01, cprob=0.8, selected=10,
-#                            patience=100, fix_prob=0.01, mutate_ver_prob=0.01,
-#                            random_init=False, pool_count=pool_c, verbal=verb))
-# algorithms.append(GA_Tuple(repetitions=3, pop_count=100, iterations=100, mprob=0.01, cprob=0.5, selected=10,
-#                            patience=100, fix_prob=0.01, mutate_ver_prob=0.01,
-#                            random_init=False, pool_count=pool_c, verbal=verb))
-# algorithms.append(GA_Tuple(repetitions=3, pop_count=100, iterations=100, mprob=0.05, cprob=0.8, selected=10,
-#                            patience=100, fix_prob=0.01, mutate_ver_prob=0.01,
-#                            random_init=False, pool_count=pool_c, verbal=verb))
-# algorithms.append(GA_Tuple(repetitions=3, pop_count=100, iterations=100, mprob=0.01, cprob=0.8, selected=10,
-#                            patience=100, fix_prob=0.01, mutate_ver_prob=0.05,
-#                            random_init=False, pool_count=pool_c, verbal=verb))
-
-algorithms_extensive.append(DSatur_Tuple(10))
-algorithms_extensive.append(Greed_Tuple(10))
-algorithms_extensive.append(Pure_Greed_Tuple(10))
 
 def test(graph: nx.Graph, graph_name: str, graph_num: int, algos: [AlgoTuple], stu: float) -> [str]:
     records = []
@@ -194,6 +159,23 @@ def calculate_stu(size: int = 500, rep: int = 10):
 
 
 if __name__ == '__main__':
-    graphs = read_many_graph_files("instances", 1, 100, 0, 2, 5, 1, 7, 1, 11, 1, 26, 1, 34, 5, 46, 3)
+    algorithms_to_test = [] # lista algo_tuples, które określają algorytm do użycia, jego parametry i liczbę powtórzeń testów
+
+    # przykładowa krotka dla ga (który jest powodem dla którego w ogóle są potrzebne krotki)
+    algorithms_to_test.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.0005, cprob=0.8,
+                                         selected=3, patience=300, fix_prob=1,
+                                         random_init=False, pool_count=pool_c, verbal=verb))
+    algorithms_to_test.append(DSatur_Tuple(10)) # dodanie innych algo
+    algorithms_to_test.append(Greed_Tuple(10))
+    algorithms_to_test.append(Pure_Greed_Tuple(10))
+
+    # wczytywanie grafów. pierwszy arg to folder z grafami, dwa następne regulują losowe wagi, następny ciag to pary
+    # (indeks_pliku, liczba_plików_do_wczytania_od_tego_indeksu) czyli np. '0, 2, 4, 4' to wczytanie dwóch plików 0, 1, 4, 5, 6, 7
+    # można wpisać za dużą liczbe plików do wczytania i się nie obrazi
+    graphs = read_many_graph_files("instances", # mypath
+                                   1,   #minWeight
+                                   100, #maxWeight
+                                   0, 100)
     # graphs = read_many_graph_files("instances", 1, 100, 2, 100)
-    test_for_graphs(graphs, algorithms_extensive, test_dir, 50)
+
+    test_for_graphs(graphs=graphs, algos=algorithms_to_test, test_dir=test_dir, stu_size=500)

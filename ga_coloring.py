@@ -37,15 +37,18 @@ def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: fl
     curr_best = -math.inf
     curr_patience = 0
 
-    if verbal >= 1:
+    if verbal >= 0:
         print(f'Iteration')
 
     for it in range(iterations):
-        if verbal >= 1:
-            if it == 0:
-                print(f'{it}', end="")
+        if verbal >= 0:
+            if it == iterations - 1:
+                print(f'{it + 1}', end="")
             else:
-                print(f',{it}', end="")
+                print(f'{it + 1},', end="")
+
+            if it > 0 and (it + 1) % 20 == 0:
+                print()
 
         for ind in range(len(population)):
             fitness_func(population[ind])  # ustawia score grafu
@@ -106,6 +109,8 @@ def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: fl
                 print("\nPatience run out!")
             break
 
+
+
         if verbal >= 1:
             coloring_cost_min = math.inf
             coloring_cost_avg = 0
@@ -125,7 +130,9 @@ def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: fl
         if verbal >= 2:
             print_many_graphs(population)
             print()
-    if verbal >= 1:
+
+
+    if verbal >= 0:
         print()
 
     pool.close()
