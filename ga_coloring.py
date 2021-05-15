@@ -14,7 +14,7 @@ cross_id = 'C'
 
 def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: float, cprob: float, selected: int,
                      verbal: int = 0, pool_count: int = 12, patience: int = 5, fix_prob: float = 0.1,
-                     mutate_ver_prob: float = 0.01, random_init: bool = False) -> nx.Graph:
+                     random_init: bool = False) -> nx.Graph:
     pool = mp.Pool(pool_count)
 
     if verbal >= 1:
@@ -74,11 +74,7 @@ def genetic_coloring(graph: nx.Graph, pop_count: int, iterations: int, mprob: fl
         to_pass = []
 
         for p in processed:
-            mt = random.uniform(0, 1)
-            if mt < mprob:
-                mutate_tasks.append([mut_id, p, mutate_ver_prob])
-            else:
-                to_pass.append(p)
+            mutate_tasks.append([mut_id, p, mprob])
 
         processed = async_process_genetic_tasks(pool, pool_count, mutate_tasks)
 
@@ -196,11 +192,10 @@ def mutation(graph: nx.Graph, ver_mut_prob: float) -> nx.Graph:
     # print('Mutation')
     # print(os.getpid())
 
-    count = max(int(len(graph.nodes) * ver_mut_prob), 1)
-
-    for i in range(count):
-        index = random.randrange(len(graph.nodes))
-        graph = local_reduction(graph, index)
+    for i in range(len(graph.nodes)):
+        mr = random.random()
+        if mr < ver_mut_prob:
+            graph = local_reduction(graph, index=i)
 
     return graph
 

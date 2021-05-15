@@ -1,6 +1,7 @@
 import networkx as nx
 import random
 import string
+import copy
 
 color_key = 'c'
 weight_key = 'w'
@@ -24,7 +25,7 @@ def greedy_coloring(graph: nx.Graph, order: [int] = None) -> nx.Graph:
 
 
 def random_proper_coloring(graph: nx.Graph) -> nx.Graph:
-    graph = graph.copy()
+    graph = copy.deepcopy(graph)
 
     for v in graph.nodes:
         used_colors = get_used_colors(graph)
@@ -126,6 +127,14 @@ def get_color_counts(graph: nx.Graph):  # ile wierzchołków jest w poszczególn
             color_count[c] = 1
 
     return color_count
+
+def count_of_colors_used(graph: nx.Graph) -> int:
+    colors_used = []
+    for v in graph.nodes:
+        c = graph.nodes[v][color_key]
+        if c not in colors_used:
+            colors_used.append(c)
+    return len(colors_used)
 
 
 def get_weights_in_color(graph: nx.Graph):  # zwraca słownik przypisujący kolorowi malejącą

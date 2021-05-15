@@ -7,6 +7,7 @@ import os
 from graph_set_preparator import *
 from algo_tuples import *
 from greedy_coloring import get_greedy_coloring
+from dsatur import *
 
 # path = 'C:\\Users\\aleks\\Desktop\\inithx.i.3.col'
 path = '/Users/tomek/Workspace/ctg_projekt/instances/inithx.i.3.col'
@@ -17,14 +18,20 @@ algorithms_extensive = []
 verb = 1
 pool_c = 12
 
-algorithms_extensive.append(GA_Tuple(repetitions=3, pop_count=50, iterations=100, mprob=0.02, cprob=0.8, selected=3,
-                                     patience=300, fix_prob=1, mutate_ver_prob=0.02,
+algorithms_extensive.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.0001, cprob=0.8, selected=3,
+                                     patience=300, fix_prob=1,
+                                     random_init=False, pool_count=pool_c, verbal=verb))
+algorithms_extensive.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.0005, cprob=0.8, selected=3,
+                                     patience=300, fix_prob=1,
+                                     random_init=False, pool_count=pool_c, verbal=verb))
+algorithms_extensive.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.001, cprob=0.8, selected=3,
+                                     patience=300, fix_prob=1,
                                      random_init=False, pool_count=pool_c, verbal=verb))
 
 
 # algorithms.append(GA_Tuple(repetitions=2, pop_count=30, iterations=10, mprob=0.02, cprob=0.8, selected=10,
-#                                                                                                          patience=100, fix_prob=0.1, mutate_ver_prob=0.01,
-#                                                                                                          random_init=True, pool_count=pool_c, verbal=verb))
+#                            patience=100, fix_prob=0.1, mutate_ver_prob=0.01,
+#                            random_init=True, pool_count=pool_c, verbal=verb))
 # algorithms.append(RVC_Tuple(repetitions=5))
 # algorithms.append(Greed_Tuple(repetitions=6))
 # algorithms.append(DSatur_Tuple(repetitions=7))
@@ -41,11 +48,15 @@ algorithms_extensive.append(GA_Tuple(repetitions=3, pop_count=50, iterations=100
 #                            patience=100, fix_prob=0.01, mutate_ver_prob=0.05,
 #                            random_init=False, pool_count=pool_c, verbal=verb))
 
-def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [str]:
+# algorithms_extensive.append(DSatur_Tuple(10))
+# algorithms_extensive.append(Greed_Tuple(10))
+# algorithms_extensive.append(Pure_Greed_Tuple(10))
+
+def test(graph: nx.Graph, graph_name: str, graph_num: int, algos: [AlgoTuple], stu: float) -> [str]:
     records = []
     for ind in range(len(algos)):
         algo = algos[ind]
-        print(f"Test {ind + 1}/{len(algos)}")
+        print(f"Graph - {graph_num + 1} - test {ind + 1}/{len(algos)}")
         record = f"{graph_name}"
         if type(algo) is GA_Tuple:
             record += ",GA"
@@ -61,7 +72,9 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
         repetitions = algo.repetitions
 
         min_cost = math.inf
+        min_cols = math.inf
         total_cost = 0
+        total_colors = 0
         total_time = 0
 
         for i in range(repetitions):
@@ -74,7 +87,7 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
                                             mprob=algo.mprob, cprob=algo.cprob, selected=algo.selected,
                                             verbal=algo.verbal,
                                             pool_count=algo.pool_count, patience=algo.patience, fix_prob=algo.fix_prob,
-                                            mutate_ver_prob=algo.mutate_ver_prob, random_init=algo.random_init)
+                                            random_init=algo.random_init)
                 end = time.time()
 
             elif type(algo) is Pure_Greed_Tuple:
@@ -104,17 +117,22 @@ def test(graph: nx.Graph, graph_name: str, algos: [AlgoTuple], stu: float) -> [s
             if cost < min_cost:
                 min_cost = cost
 
+            col = count_of_colors_used(coloring)
+            if col < min_cols:
+                min_cols = col
+
             total_cost += cost
+            total_colors += count_of_colors_used(coloring)
             total_time += end - start
 
-        record += f",{round(total_cost / repetitions, 3)},{min_cost}"
+        record += f",{round(total_colors / repetitions, 3)},{min_cols},{round(total_cost / repetitions, 3)},{min_cost}"
         record += f",{round(total_time / repetitions / stu, 3)}"
 
         record += f",{algo.repetitions}"
 
         if type(algo) is GA_Tuple:
             record += f"|{algo.pop_count}|{algo.iterations}|{algo.mprob}|{algo.cprob}|" \
-                      f"{algo.selected}|{algo.patience}|{algo.fix_prob}|{algo.mutate_ver_prob}|{algo.random_init}"
+                      f"{algo.selected}|{algo.patience}|{algo.fix_prob}|{algo.random_init}"
         if type(algo) is Greed_Tuple:
             # TODO Dodać parametry Greedy do record (jeśli jakieś są)
             pass
@@ -138,12 +156,12 @@ def test_for_graphs(graphs: [(nx.Graph, str)], algos: [AlgoTuple], test_dir: str
     file = open(
         f"{test_dir}{os.path.sep}tests_{now.year}_{now.month}_{now.day}_{now.hour}_{now.minute}_{now.second}.csv", "w")
 
-    file.write("name,algorithm,avg_cost,min_cost,avg_time,parameters\n")
+    file.write("name,algorithm,avg_col_used,min_col_used,avg_cost,min_cost,avg_time,parameters\n")
 
     for ind in range(len(graphs)):
         g = graphs[ind]
         print(f"Tests for graph {ind + 1}")
-        res = test(g[0], g[1], algos, stu)
+        res = test(g[0], g[1], ind,  algos, stu)
         result.extend(res)
         for r in res:
             file.write(r + "\n")
