@@ -1,17 +1,10 @@
+import random
 from copy import copy
 
-import networkx as nx
 import matplotlib.pyplot as plt
-import numpy as np
+import networkx as nx
 
-from graph_set_preparator import read_graph_file, print_graph, weight_graph_randomly, check_if_coloring_is_proper
-
-example_path = '/Users/tomek/Workspace/ctg_projekt/instances/zeroin.i.1.col'
-
-graph = read_graph_file(path=example_path)
-graph = weight_graph_randomly(graph, 10, 100).copy()
-nx.draw(graph, with_labels=True)
-plt.show()
+from graph_set_preparator import check_if_coloring_is_proper
 
 
 def get_greedy_coloring(graph: nx.Graph) -> nx.Graph:
@@ -19,7 +12,11 @@ def get_greedy_coloring(graph: nx.Graph) -> nx.Graph:
     colors = range(0,len(color_map))
     max_weights = {color : 0 for color in range(len(colors))}
 
-    for v in graph.nodes():
+    colored_vertices = [-1] * len(graph.nodes)
+    uncolored_vertices = list(range(0,len(graph.nodes)))
+    while len(uncolored_vertices)>0:
+        v_idx = random.randint(0,len(uncolored_vertices)-1)
+        v = uncolored_vertices[v_idx]
         available_colors = {i: True for i in range(0,len(colors))}
         for current_color in available_colors.keys():
             for nbr in graph.adj[v]:
@@ -38,11 +35,14 @@ def get_greedy_coloring(graph: nx.Graph) -> nx.Graph:
         color = new_sums.index(min(i for i in new_sums if i > -1))
         graph.nodes[v]['c'] = color
         color_map[v] = colors[color]
+        colored_vertices[v] = v
+        uncolored_vertices.remove(v)
         # print(f"Coloured vertex {v} with colour {colors[color]}")
         max_weights[color] = max(max_weights[color],graph.nodes[v]['w'])
 
     if check_if_coloring_is_proper(graph):
-        print(f"Used {sum(1 for i in max_weights.values() if i > 0)} colours")
+        print(f"Greedy used {sum(1 for i in max_weights.values() if i > 0)} colours")
+        # print(f"Greedy vertex coloring = {color_map}")
         nx.draw(graph, with_labels=True, node_color=color_map)
         plt.show()
     else:

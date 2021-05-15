@@ -1,3 +1,5 @@
+import copy
+
 import networkx as nx
 from graph_utility import *
 from os import listdir
@@ -28,8 +30,9 @@ def read_graph_file(path: str) -> nx.Graph:
     return graph
 
 
-def weight_graph_randomly(graph: nx.Graph, minWeight: int, maxWeight: int) -> nx.Graph:  # uzupełnia brakujące(!) wagi
-    graph = graph.copy()
+def weight_graph_randomly(graph: nx.Graph, minWeight: int, maxWeight: int, seed:int) -> nx.Graph:  # uzupełnia brakujące(!) wagi
+    g = copy.deepcopy(graph)
+    random.seed(seed)
     weights = []
     for v in graph.nodes:
         if weight_key not in graph.nodes[v]:
@@ -37,7 +40,7 @@ def weight_graph_randomly(graph: nx.Graph, minWeight: int, maxWeight: int) -> nx
         else:
             weights.append(graph.nodes[v][weight_key])
 
-    return weight_graph(graph, weights)
+    return weight_graph(g, weights)
 
 
 # zwraca pary (graf, nazwa_grafu)
