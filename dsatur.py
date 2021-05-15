@@ -1,19 +1,11 @@
-from copy import copy
-
+import time
 import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-
+from copy import copy
 from graph_set_preparator import read_graph_file, print_graph, weight_graph_randomly, check_if_coloring_is_proper
 from greedy_coloring import get_greedy_coloring
-
-example_path = '/Users/tomek/Workspace/ctg_projekt/instances/miles1500.col'
-
-graph = read_graph_file(path=example_path)
-graph = weight_graph_randomly(graph, 10, 100).copy()
-nx.draw(graph, with_labels=True)
-plt.show()
 
 
 def get_dsatur_coloring(graph: nx.Graph) -> nx.Graph :
@@ -101,11 +93,27 @@ def get_dsatur_coloring(graph: nx.Graph) -> nx.Graph :
 
     if check_if_coloring_is_proper(graph):
         print(f"DSatur used {sum(1 for i in max_weights.values() if i > 0)} colours")
+        # print(f"Dsatur vertex coloring = {color_map}")
         nx.draw(graph, with_labels=True, node_color=color_map)
         plt.show()
     else:
         print("Improper colouring has been found")
 
 
-get_dsatur_coloring(graph)
-get_greedy_coloring(graph)
+
+example_path = '/Users/tomek/Workspace/ctg_projekt/instances/queen16_16.col'
+
+graph = read_graph_file(path=example_path)
+
+nx.draw(graph, with_labels=True)
+plt.show()
+
+
+for i in range(0,5):
+    print(f"Iteration = {i}")
+    s = time.time()
+    get_dsatur_coloring(weight_graph_randomly(graph, 10, 100,seed=42))
+    print(f"Execution took {time.time() - s}s")
+    s = time.time()
+    get_greedy_coloring(weight_graph_randomly(graph, 10, 100,seed=42))
+    print(f"Execution took {time.time() - s}s")
