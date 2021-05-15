@@ -8,6 +8,7 @@ from graph_set_preparator import *
 from algo_tuples import *
 from greedy_coloring import get_greedy_coloring
 from dsatur import *
+import copy
 
 # path = 'C:\\Users\\aleks\\Desktop\\inithx.i.3.col'
 path = '/Users/tomek/Workspace/ctg_projekt/instances/inithx.i.3.col'
@@ -163,7 +164,7 @@ if __name__ == '__main__':
     algorithms_to_test = [] # lista algo_tuples, które określają algorytm do użycia, jego parametry i liczbę powtórzeń testów
 
     # przykładowa krotka dla ga (który jest powodem dla którego w ogóle są potrzebne krotki)
-    algorithms_to_test.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.0005, cprob=0.8,
+    algorithms_to_test.append(GA_Tuple(repetitions=5, pop_count=100, iterations=100, mprob=0.0005, cprob=0.8,
                                          selected=3, patience=300, fix_prob=1,
                                          random_init=False, pool_count=pool_c, verbal=verb))
     algorithms_to_test.append(DSatur_Tuple(10)) # dodanie innych algo
@@ -179,4 +180,4 @@ if __name__ == '__main__':
                                    0, 100)
     # graphs = read_many_graph_files("instances", 1, 100, 2, 100)
 
-    test_for_graphs(graphs=graphs, algos=algorithms_to_test, test_dir=test_dir, stu_size=500)
+    test_for_graphs(graphs=graphs, algos=algorithms_to_test, test_dir=test_dir, stu_size=50)
