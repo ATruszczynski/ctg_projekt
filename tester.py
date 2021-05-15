@@ -18,15 +18,15 @@ algorithms_extensive = []
 verb = 1
 pool_c = 12
 
-algorithms_extensive.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.0001, cprob=0.8, selected=3,
-                                     patience=300, fix_prob=1,
-                                     random_init=False, pool_count=pool_c, verbal=verb))
-algorithms_extensive.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.0005, cprob=0.8, selected=3,
-                                     patience=300, fix_prob=1,
-                                     random_init=False, pool_count=pool_c, verbal=verb))
-algorithms_extensive.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.001, cprob=0.8, selected=3,
-                                     patience=300, fix_prob=1,
-                                     random_init=False, pool_count=pool_c, verbal=verb))
+# algorithms_extensive.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.0001, cprob=0.8, selected=3,
+#                                      patience=300, fix_prob=1,
+#                                      random_init=False, pool_count=pool_c, verbal=verb))
+# algorithms_extensive.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.0005, cprob=0.8, selected=3,
+#                                      patience=300, fix_prob=1,
+#                                      random_init=False, pool_count=pool_c, verbal=verb))
+# algorithms_extensive.append(GA_Tuple(repetitions=7, pop_count=100, iterations=100, mprob=0.001, cprob=0.8, selected=3,
+#                                      patience=300, fix_prob=1,
+#                                      random_init=False, pool_count=pool_c, verbal=verb))
 
 
 # algorithms.append(GA_Tuple(repetitions=2, pop_count=30, iterations=10, mprob=0.02, cprob=0.8, selected=10,
@@ -48,9 +48,9 @@ algorithms_extensive.append(GA_Tuple(repetitions=7, pop_count=100, iterations=10
 #                            patience=100, fix_prob=0.01, mutate_ver_prob=0.05,
 #                            random_init=False, pool_count=pool_c, verbal=verb))
 
-# algorithms_extensive.append(DSatur_Tuple(10))
-# algorithms_extensive.append(Greed_Tuple(10))
-# algorithms_extensive.append(Pure_Greed_Tuple(10))
+algorithms_extensive.append(DSatur_Tuple(10))
+algorithms_extensive.append(Greed_Tuple(10))
+algorithms_extensive.append(Pure_Greed_Tuple(10))
 
 def test(graph: nx.Graph, graph_name: str, graph_num: int, algos: [AlgoTuple], stu: float) -> [str]:
     records = []

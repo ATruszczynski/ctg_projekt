@@ -94,26 +94,28 @@ def get_dsatur_coloring(graph: nx.Graph) -> nx.Graph :
     if check_if_coloring_is_proper(graph):
         print(f"DSatur used {sum(1 for i in max_weights.values() if i > 0)} colours")
         # print(f"Dsatur vertex coloring = {color_map}")
-        nx.draw(graph, with_labels=True, node_color=color_map)
-        plt.show()
+        # nx.draw(graph, with_labels=True, node_color=color_map)
+        # plt.show()
     else:
         print("Improper colouring has been found")
 
+    return graph
 
 
-example_path = '/Users/tomek/Workspace/ctg_projekt/instances/queen16_16.col'
 
-graph = read_graph_file(path=example_path)
-
-nx.draw(graph, with_labels=True)
-plt.show()
-
-
-for i in range(0,5):
-    print(f"Iteration = {i}")
-    s = time.time()
-    get_dsatur_coloring(weight_graph_randomly(graph, 10, 100,seed=42))
-    print(f"Execution took {time.time() - s}s")
-    s = time.time()
-    get_greedy_coloring(weight_graph_randomly(graph, 10, 100,seed=42))
-    print(f"Execution took {time.time() - s}s")
+# example_path = '/Users/tomek/Workspace/ctg_projekt/instances/queen16_16.col'
+#
+# graph = read_graph_file(path=example_path)
+#
+# nx.draw(graph, with_labels=True)
+# plt.show()
+#
+#
+# for i in range(0,5):
+#     print(f"Iteration = {i}")
+#     s = time.time()
+#     get_dsatur_coloring(weight_graph_randomly(graph, 10, 100,seed=42))
+#     print(f"Execution took {time.time() - s}s")
+#     s = time.time()
+#     get_greedy_coloring(weight_graph_randomly(graph, 10, 100,seed=42))
+#     print(f"Execution took {time.time() - s}s")

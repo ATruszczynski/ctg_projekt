@@ -61,11 +61,10 @@ def read_many_graph_files(mypath: str, minWeight: int = 1, maxWeight: int = 100,
                 break
             gf = graph_files[ind]
             ftl = gf[0:3]
-            random.seed(ord(ftl[0]) * ord(ftl[1]) * ord(ftl[
-                                                            2]))  # jednoznaczne ziarno oparte na nazwie grafu (żeby graf miał zawsze tak samo ważone wierzchołki)
+            seed = ord(ftl[0]) * ord(ftl[1]) * ord(ftl[2]) # jednoznaczne ziarno oparte na nazwie grafu (żeby graf miał zawsze tak samo ważone wierzchołki)
 
             graph = read_graph_file(join(mypath, gf))
-            graph = weight_graph_randomly(graph, minWeight, maxWeight + 1)
+            graph = weight_graph_randomly(graph, minWeight, maxWeight + 1, seed)
             name_parts = gf.split('.')
             name = ""
             for i in range(0, len(name_parts) - 1):

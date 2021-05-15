@@ -43,8 +43,8 @@ def get_greedy_coloring(graph: nx.Graph) -> nx.Graph:
     if check_if_coloring_is_proper(graph):
         print(f"Greedy used {sum(1 for i in max_weights.values() if i > 0)} colours")
         # print(f"Greedy vertex coloring = {color_map}")
-        nx.draw(graph, with_labels=True, node_color=color_map)
-        plt.show()
+        # nx.draw(graph, with_labels=True, node_color=color_map)
+        # plt.show()
     else:
         print("Improper colouring has been found")
 
