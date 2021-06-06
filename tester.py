@@ -164,10 +164,10 @@ if __name__ == '__main__':
     algorithms_to_test = [] # lista algo_tuples, które określają algorytm do użycia, jego parametry i liczbę powtórzeń testów
 
     # przykładowa krotka dla ga (który jest powodem dla którego w ogóle są potrzebne krotki)
-    algorithms_to_test.append(GA_Tuple(repetitions=5, pop_count=100, iterations=100, mprob=0.0005, cprob=0.8,
-                                         selected=3, patience=300, fix_prob=1,
-                                         random_init=False, pool_count=pool_c, verbal=verb))
-    algorithms_to_test.append(DSatur_Tuple(10)) # dodanie innych algo
+    # algorithms_to_test.append(GA_Tuple(repetitions=1, pop_count=100, iterations=100, mprob=0.0005, cprob=0.8,
+    #                                      selected=3, patience=300, fix_prob=1,
+    #                                      random_init=False, pool_count=pool_c, verbal=verb))
+    algorithms_to_test.append(DSatur_Tuple(10))# dodanie innych algo
     algorithms_to_test.append(Greed_Tuple(10))
     algorithms_to_test.append(Pure_Greed_Tuple(10))
 
@@ -177,7 +177,7 @@ if __name__ == '__main__':
     graphs = read_many_graph_files("instances", # mypath
                                    1,   #minWeight
                                    100, #maxWeight
-                                   0, 100)
+                                   0, 10)
     # graphs = read_many_graph_files("instances", 1, 100, 2, 100)
 
-    test_for_graphs(graphs=graphs, algos=algorithms_to_test, test_dir=test_dir, stu_size=50)
+    test_for_graphs(graphs=graphs, algos=algorithms_to_test, test_dir=test_dir, stu_size=500)
